@@ -20,6 +20,9 @@ export const i18n = new I18n({
       disconnected: 'Disconnected',
       connecting: 'Connecting...',
       offline: 'Offline Mode',
+      directConnection: 'Direct Connection',
+      cloudConnection: 'Cloud Connection',
+      websocketConnection: 'WebSocket Connection'
     },
     battery: {
       level: 'Battery Level',
@@ -156,6 +159,9 @@ export const i18n = new I18n({
       disconnected: 'डिस्कनेक्टेड',
       connecting: 'कनेक्ट हो रहा है...',
       offline: 'ऑफलाइन मोड',
+      directConnection: 'डायरेक्ट कनेक्शन',
+      cloudConnection: 'क्लाउड कनेक्शन',
+      websocketConnection: 'वेबसॉकेट कनेक्शन'
     },
     battery: {
       level: 'बैटरी स्तर',
