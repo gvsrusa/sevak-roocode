@@ -1,114 +1,68 @@
 # Sevak Tractor Mobile App
 
-Mobile application for controlling and monitoring the Sevak mini tractor, designed for small-scale farmers in rural India.
-
-## Features
-
-- **Manual Control**: Direct control of the tractor with virtual joystick and speed controls
-- **Status Monitoring**: Real-time dashboard showing tractor metrics and status
-- **Task Scheduling**: Schedule autonomous operations for the tractor
-- **Emergency Stop**: Quick access emergency stop functionality
-- **Authentication**: Secure login and user management
-- **Offline Operation**: Works in areas with intermittent connectivity
-- **Multi-language Support**: Available in English, Hindi, Bengali, Tamil, Telugu, and Marathi
-
-## Technology Stack
-
-- React Native with Expo
-- TypeScript
-- React Navigation
-- Zustand for state management
-- Socket.IO for real-time communication
-- React Native Maps for location visualization
-
-## Prerequisites
-
-- Node.js (v14 or newer)
-- npm or yarn
-- Expo CLI
-- Android Studio (for Android development)
-- Xcode (for iOS development, macOS only)
-
 ## Installation
 
-1. Clone the repository
 ```bash
-git clone https://github.com/your-organization/sevak-tractor-app.git
-cd sevak-tractor-app/mobile-app
-```
-
-2. Install dependencies
-```bash
+# Install dependencies
 npm install
-# or
-yarn install
 ```
 
-3. Start the development server
-```bash
-npm start
-# or
-yarn start
-```
+## Running the App
 
-4. Run on a device or emulator
-```bash
-# For iOS
-npm run ios
-# or
-yarn ios
+### Option 1: Run on Android
 
-# For Android
+```bash
+# Start the app on Android
 npm run android
-# or
-yarn android
 ```
 
-## Project Structure
+Requirements:
+- Android Studio installed with an emulator set up, OR
+- Physical Android device connected via USB with USB debugging enabled
 
-```
-mobile-app/
-├── src/
-│   ├── assets/           # Images, fonts, and other static assets
-│   ├── components/       # Reusable UI components
-│   ├── screens/          # Screen components
-│   ├── navigation/       # Navigation configuration
-│   ├── services/         # API and service integrations
-│   ├── store/            # State management
-│   ├── utils/            # Utility functions and helpers
-│   └── hooks/            # Custom React hooks
-├── App.tsx               # Main application component
-├── app.json              # Expo configuration
-└── package.json          # Project dependencies
+### Option 2: Run on iOS (Mac only)
+
+```bash
+# Start the app on iOS
+npm run ios
 ```
 
-## Key Components
+Requirements:
+- Xcode installed with iOS simulator, OR
+- Physical iOS device with Expo Go app installed
 
-- **Dashboard**: Shows tractor status, battery level, and alerts
-- **Control Panel**: Manual control interface with joystick and speed controls
-- **Task Scheduler**: Interface for scheduling autonomous operations
-- **Settings**: App configuration, language selection, and user preferences
+### Option 3: Run on Web
 
-## Offline Functionality
+```bash
+# Start the app on web browser
+npm run web
+```
 
-The app is designed to work in areas with limited connectivity:
+### Option 4: Run with Expo Go app
 
-- Caches essential tractor data for offline viewing
-- Queues control commands when connectivity is temporarily lost
-- Synchronizes data when connectivity is restored
-- Clearly indicates offline status to the user
+```bash
+# Start the Expo development server
+npm start
+```
 
-## Security Features
+Then scan the QR code with:
+- Expo Go app on Android
+- Camera app on iOS (with Expo Go installed)
 
-- Multi-factor authentication options
-- Role-based access control (owner, operator, viewer)
-- Encrypted data storage and communication
-- Session management and secure token handling
+## Troubleshooting
 
-## Contributing
+### Android Emulator Setup
+1. Install Android Studio
+2. Go to SDK Manager and install the latest Android SDK
+3. Go to AVD Manager and create a new virtual device
+4. Start the emulator before running `npm run android`
 
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+### iOS Simulator Setup (Mac only)
+1. Install Xcode from the App Store
+2. Open Xcode and install additional components if prompted
+3. Run `npm run ios` to start the simulator
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Physical Device Setup
+1. Install Expo Go app from App Store or Google Play Store
+2. Make sure your device is on the same network as your development machine
+3. Run `npm start` and scan the QR code with your device

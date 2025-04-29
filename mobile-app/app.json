@@ -20,7 +20,10 @@
       "buildNumber": "1.0.0",
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "This app needs access to your location to show your position relative to the tractor.",
-        "UIBackgroundModes": ["location", "fetch"]
+        "UIBackgroundModes": [
+          "location",
+          "fetch"
+        ]
       }
     },
     "android": {
@@ -45,7 +48,9 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Sevak Tractor to use your location to show your position relative to the tractor."
         }
-      ]
+      ],
+      "expo-localization",
+      "expo-secure-store"
     ]
   }
 }

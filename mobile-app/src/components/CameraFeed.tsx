@@ -32,7 +32,7 @@ const CameraFeed: React.FC<CameraFeedProps> = ({ style }) => {
     <View style={[styles.container, style]}>
       {/* Placeholder image - in a real app, this would be a video stream */}
       <Image
-        source={require('../assets/camera-placeholder.png')}
+        source={require('../assets/camera-placeholder.svg')}
         style={styles.cameraFeed}
         resizeMode="cover"
         // Fallback for when the image doesn't exist yet
