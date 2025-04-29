@@ -201,7 +201,7 @@ const DashboardScreen: React.FC = () => {
 
           {/* Operation Status */}
           <StatusCard
-            title={i18n.t('operationStatus')}
+            title={i18n.t('operationStatusTitle')}
             icon="analytics"
             iconColor="#4CAF50"
           >
@@ -256,7 +256,7 @@ const DashboardScreen: React.FC = () => {
 
           {/* Safety Status */}
           <StatusCard
-            title={i18n.t('safetyStatus')}
+            title={i18n.t('safetyStatusTitle')}
             icon="shield-checkmark"
             iconColor={getSafetyStatusColor(status.safetyStatus)}
           >

@@ -51,6 +51,7 @@
       ],
       "expo-localization",
       "expo-secure-store"
-    ]
+    ],
+    "newArchEnabled": true
   }
 }

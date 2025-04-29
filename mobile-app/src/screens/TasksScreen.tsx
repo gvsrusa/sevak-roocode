@@ -329,7 +329,7 @@ const TasksScreen: React.FC = () => {
 
                 {/* Task Type */}
                 <View style={styles.formGroup}>
-                  <Text style={styles.formLabel}>{i18n.t('taskType')}</Text>
+                  <Text style={styles.formLabel}>{i18n.t('taskTypeTitle')}</Text>
                   <View style={styles.taskTypeContainer}>
                     {(['cutting', 'loading', 'transport', 'custom'] as TaskType[]).map((type) => (
                       <TouchableOpacity

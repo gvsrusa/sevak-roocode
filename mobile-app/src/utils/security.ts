@@ -419,20 +419,18 @@ export class SecurityManager {
       // Convert data to string
       const dataStr = JSON.stringify(data);
       
-      // Generate random IV (initialization vector)
-      const ivArray = new Uint8Array(16);
-      crypto.getRandomValues(ivArray);
-      const iv = Buffer.from(ivArray).toString('base64');
+      // Generate random IV (initialization vector) using expo-crypto
+      const iv = await Crypto.getRandomBytesAsync(16);
+      const ivBase64 = Buffer.from(iv).toString('base64');
       
-      // Generate random symmetric key
-      const keyArray = new Uint8Array(32);
-      crypto.getRandomValues(keyArray);
-      const symmetricKey = Buffer.from(keyArray).toString('base64');
+      // Generate random symmetric key using expo-crypto
+      const keyBytes = await Crypto.getRandomBytesAsync(32);
+      const symmetricKey = Buffer.from(keyBytes).toString('base64');
       
       // "Encrypt" data with symmetric key (simplified)
       const encryptedData = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
-        dataStr + symmetricKey + iv
+        dataStr + symmetricKey + ivBase64
       );
       
       // "Encrypt" symmetric key with server public key (simplified)
@@ -444,12 +442,12 @@ export class SecurityManager {
       // Generate auth tag (simplified)
       const authTag = await Crypto.digestStringAsync(
         Crypto.CryptoDigestAlgorithm.SHA256,
-        encryptedData + iv
+        encryptedData + ivBase64
       );
       
       return {
         encryptedData,
-        iv,
+        iv: ivBase64,
         authTag,
         encryptedKey
       };
@@ -558,8 +556,8 @@ export class SecurityManager {
    */
   public async generateSecureToken(length: number = 32): Promise<string> {
     try {
-      const randomBytes = new Uint8Array(length);
-      crypto.getRandomValues(randomBytes);
+      // Use expo-crypto instead of global crypto
+      const randomBytes = await Crypto.getRandomBytesAsync(length);
       return Buffer.from(randomBytes).toString('hex');
     } catch (error) {
       console.error('Failed to generate secure token:', error);

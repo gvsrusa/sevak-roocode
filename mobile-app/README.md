@@ -4,7 +4,7 @@
 
 ```bash
 # Install dependencies
-npm install
+npm install --legacy-peer-deps
 ```
 
 ## Running the App
@@ -49,7 +49,41 @@ Then scan the QR code with:
 - Expo Go app on Android
 - Camera app on iOS (with Expo Go installed)
 
+## Test Login Credentials
+
+Use these credentials to log in to the app:
+
+- Username: `admin`
+- Password: `password`
+
+## Project Configuration
+
+- React Native's New Architecture is enabled in this project (`"newArchEnabled": true` in app.json)
+- The app uses Expo SDK with compatible package versions
+- Assets are downloaded using the provided script
+
 ## Troubleshooting
+
+### Missing Assets
+If you encounter missing asset errors, run the download-assets.sh script:
+
+```bash
+chmod +x download-assets.sh
+./download-assets.sh
+```
+
+### Dependency Conflicts
+If you encounter dependency conflicts, try the following:
+
+1. Use the `--legacy-peer-deps` flag:
+```bash
+npm install --legacy-peer-deps
+```
+
+2. Use Expo's install command to fix version mismatches:
+```bash
+npx expo install --fix
+```
 
 ### Android Emulator Setup
 1. Install Android Studio

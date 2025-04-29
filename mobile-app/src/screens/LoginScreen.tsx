@@ -184,7 +184,7 @@ const LoginScreen: React.FC = () => {
             
             {mfaAvailable && (
               <View style={styles.mfaContainer}>
-                <Text style={styles.mfaText}>Use biometric authentication</Text>
+                <Text style={styles.mfaText}>{i18n.t('useBiometricAuth')}</Text>
                 <Switch
                   value={useMfa}
                   onValueChange={setUseMfa}
@@ -204,7 +204,7 @@ const LoginScreen: React.FC = () => {
                 <ActivityIndicator color="#fff" testID="loading-indicator" />
               ) : (
                 <Text style={styles.loginButtonText}>
-                  {useMfa ? 'Secure Login' : i18n.t('login')}
+                  {useMfa ? i18n.t('secureLogin') : i18n.t('login')}
                 </Text>
               )}
             </TouchableOpacity>

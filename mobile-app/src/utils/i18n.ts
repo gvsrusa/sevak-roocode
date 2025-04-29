@@ -53,6 +53,14 @@ export const i18n = new I18n({
       about: 'About',
       help: 'Help',
       advanced: 'Advanced Settings',
+      preferences: 'Preferences',
+      offlineMode: 'Offline Mode',
+      offlineModeDescription: 'Allow operation without internet connection',
+      connection: 'Connection',
+      connectionStatus: 'Connection Status',
+      selectLanguage: 'Select Language',
+      security: 'Security',
+      securitySettings: 'Security Settings',
     },
     errors: {
       connection: 'Connection failed',
@@ -65,6 +73,71 @@ export const i18n = new I18n({
       notice: 'You are currently offline',
       queuedCommands: 'Commands will be sent when connection is restored',
     },
+    // Added missing translations
+    error: 'Error',
+    enterUsernameAndPassword: 'Please enter both username and password',
+    ok: 'OK',
+    loginFailed: 'Login failed. Please try again.',
+    forgotPassword: 'Forgot Password?',
+    secureLogin: 'Secure Login',
+    useBiometricAuth: 'Use biometric authentication',
+    loading: 'Loading...',
+    
+    // Dashboard screen translations
+    operationStatusTitle: 'Operation Status',
+    operationStatus: {
+      idle: 'Idle',
+      running: 'Running',
+      paused: 'Paused',
+      completed: 'Completed',
+      error: 'Error'
+    },
+    speed: 'Speed',
+    motorTemperature: 'Motor Temperature',
+    safetyStatusTitle: 'Safety Status',
+    safetyStatus: {
+      normal: 'Normal',
+      warning: 'Warning',
+      critical: 'Critical'
+    },
+    recentAlerts: 'Recent Alerts',
+    connectionFailed: 'Failed to connect to tractor',
+    connectionError: 'Connection error occurred',
+    
+    // Control screen translations
+    hideCamera: 'Hide Camera',
+    showCamera: 'Show Camera',
+    emergencyStop: 'Emergency Stop',
+    confirmEmergencyStop: 'Are you sure you want to perform an emergency stop?',
+    cancel: 'Cancel',
+    stop: 'Stop',
+    
+    // Tasks screen translations
+    confirmCancelTask: 'Cancel Task',
+    confirmCancelTaskMessage: 'Are you sure you want to cancel this task?',
+    no: 'No',
+    yes: 'Yes',
+    createTask: 'Create Task',
+    taskName: 'Task Name',
+    enterTaskName: 'Enter task name',
+    taskTypeTitle: 'Task Type',
+    taskType: {
+      cutting: 'Cutting',
+      loading: 'Loading',
+      transport: 'Transport',
+      custom: 'Custom'
+    },
+    scheduledTime: 'Scheduled Time',
+    estimatedDuration: 'Estimated Duration',
+    field: 'Field',
+    enterFieldName: 'Enter field name',
+    description: 'Description',
+    enterDescription: 'Enter description',
+    
+    // Settings screen translations
+    confirmLogout: 'Confirm Logout',
+    confirmLogoutMessage: 'Are you sure you want to log out?',
+    close: 'Close'
   },
   hi: {
     welcome: 'सेवक ट्रैक्टर नियंत्रण में आपका स्वागत है',
@@ -116,6 +189,14 @@ export const i18n = new I18n({
       about: 'के बारे में',
       help: 'सहायता',
       advanced: 'उन्नत सेटिंग्स',
+      preferences: 'प्राथमिकताएँ',
+      offlineMode: 'ऑफलाइन मोड',
+      offlineModeDescription: 'इंटरनेट कनेक्शन के बिना संचालन की अनुमति दें',
+      connection: 'कनेक्शन',
+      connectionStatus: 'कनेक्शन स्थिति',
+      selectLanguage: 'भाषा चुनें',
+      security: 'सुरक्षा',
+      securitySettings: 'सुरक्षा सेटिंग्स',
     },
     errors: {
       connection: 'कनेक्शन विफल',
@@ -128,6 +209,71 @@ export const i18n = new I18n({
       notice: 'आप वर्तमान में ऑफलाइन हैं',
       queuedCommands: 'कनेक्शन बहाल होने पर कमांड भेजे जाएंगे',
     },
+    // Added missing translations
+    error: 'त्रुटि',
+    enterUsernameAndPassword: 'कृपया उपयोगकर्ता नाम और पासवर्ड दोनों दर्ज करें',
+    ok: 'ठीक है',
+    loginFailed: 'लॉगिन विफल। कृपया पुनः प्रयास करें।',
+    forgotPassword: 'पासवर्ड भूल गए?',
+    secureLogin: 'सुरक्षित लॉगिन',
+    useBiometricAuth: 'बायोमेट्रिक प्रमाणीकरण का उपयोग करें',
+    loading: 'लोड हो रहा है...',
+    
+    // Dashboard screen translations
+    operationStatusTitle: 'संचालन स्थिति',
+    operationStatus: {
+      idle: 'निष्क्रिय',
+      running: 'चल रहा है',
+      paused: 'रुका हुआ',
+      completed: 'पूर्ण',
+      error: 'त्रुटि'
+    },
+    speed: 'गति',
+    motorTemperature: 'मोटर तापमान',
+    safetyStatusTitle: 'सुरक्षा स्थिति',
+    safetyStatus: {
+      normal: 'सामान्य',
+      warning: 'चेतावनी',
+      critical: 'गंभीर'
+    },
+    recentAlerts: 'हाल के अलर्ट',
+    connectionFailed: 'ट्रैक्टर से कनेक्ट करने में विफल',
+    connectionError: 'कनेक्शन त्रुटि हुई',
+    
+    // Control screen translations
+    hideCamera: 'कैमरा छिपाएं',
+    showCamera: 'कैमरा दिखाएं',
+    emergencyStop: 'आपातकालीन रोक',
+    confirmEmergencyStop: 'क्या आप वाकई आपातकालीन रोक करना चाहते हैं?',
+    cancel: 'रद्द करें',
+    stop: 'रोकें',
+    
+    // Tasks screen translations
+    confirmCancelTask: 'कार्य रद्द करें',
+    confirmCancelTaskMessage: 'क्या आप वाकई इस कार्य को रद्द करना चाहते हैं?',
+    no: 'नहीं',
+    yes: 'हां',
+    createTask: 'कार्य बनाएं',
+    taskName: 'कार्य का नाम',
+    enterTaskName: 'कार्य का नाम दर्ज करें',
+    taskTypeTitle: 'कार्य प्रकार',
+    taskType: {
+      cutting: 'कटाई',
+      loading: 'लोडिंग',
+      transport: 'परिवहन',
+      custom: 'कस्टम'
+    },
+    scheduledTime: 'निर्धारित समय',
+    estimatedDuration: 'अनुमानित अवधि',
+    field: 'खेत',
+    enterFieldName: 'खेत का नाम दर्ज करें',
+    description: 'विवरण',
+    enterDescription: 'विवरण दर्ज करें',
+    
+    // Settings screen translations
+    confirmLogout: 'लॉगआउट की पुष्टि करें',
+    confirmLogoutMessage: 'क्या आप वाकई लॉगआउट करना चाहते हैं?',
+    close: 'बंद करें'
   },
 });
 
