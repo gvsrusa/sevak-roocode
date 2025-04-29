@@ -1,0 +1,30 @@
+{
+  "name": "sevak-tractor-control",
+  "version": "1.0.0",
+  "description": "Control system for Sevak Mini Tractor",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ws": "^8.13.0",
+    "socket.io": "^4.7.2",
+    "https": "^1.0.0",
+    "fs": "^0.0.1-security",
+    "path": "^0.12.7",
+    "crypto": "^1.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "mock-socket": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "author": "Sevak Tractor Team",
+  "license": "MIT"
+}

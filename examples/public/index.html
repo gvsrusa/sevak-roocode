@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sevak Mini Tractor - Monitoring Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      padding-top: 20px;
+      background-color: #f8f9fa;
+    }
+    .card {
+      margin-bottom: 20px;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    .card-header {
+      background-color: #f8f9fa;
+      font-weight: bold;
+    }
+    .status-badge {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.5rem;
+    }
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .metric-label {
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+    .alert-item {
+      border-left: 4px solid #dc3545;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f8f9fa;
+    }
+    .alert-item.warning {
+      border-left-color: #ffc107;
+    }
+    .alert-item.info {
+      border-left-color: #0dcaf0;
+    }
+    .alert-item.resolved {
+      border-left-color: #198754;
+      opacity: 0.7;
+    }
+    .maintenance-item {
+      border-left: 4px solid #0d6efd;
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f8f9fa;
+    }
+    .maintenance-item.due {
+      border-left-color: #dc3545;
+    }
+    .chart-container {
+      position: relative;
+      height: 250px;
+      width: 100%;
+    }
+    .tab-content {
+      padding: 20px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="d-flex justify-content-between align-items-center mb-4">
+      <h1>Sevak Mini Tractor - Monitoring Dashboard</h1>
+      <div>
+        <span id="connection-status" class="badge bg-danger">Disconnected</span>
+        <button id="refresh-btn" class="btn btn-sm btn-outline-primary ms-2">
+          <i class="bi bi-arrow-clockwise"></i> Refresh
+        </button>
+      </div>
+    </header>
+
+    <div class="row">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">System Status</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">CPU</div>
+                <div id="cpu-value" class="metric-value">--</div>
+              </div>
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">Memory</div>
+                <div id="memory-value" class="metric-value">--</div>
+              </div>
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">Uptime</div>
+                <div id="uptime-value" class="metric-value">--</div>
+              </div>
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">Latency</div>
+                <div id="latency-value" class="metric-value">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header">Battery Status</div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">Level</div>
+                <div id="battery-level" class="metric-value">--</div>
+              </div>
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">Voltage</div>
+                <div id="battery-voltage" class="metric-value">--</div>
+              </div>
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">Temperature</div>
+                <div id="battery-temp" class="metric-value">--</div>
+              </div>
+              <div class="col-6 col-md-3 text-center mb-3">
+                <div class="metric-label">Runtime</div>
+                <div id="battery-runtime" class="metric-value">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="performance-tab" data-bs-toggle="tab" data-bs-target="#performance" type="button" role="tab" aria-controls="performance" aria-selected="true">Performance</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="alerts-tab" data-bs-toggle="tab" data-bs-target="#alerts" type="button" role="tab" aria-controls="alerts" aria-selected="false">Alerts</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="maintenance-tab" data-bs-toggle="tab" data-bs-target="#maintenance" type="button" role="tab" aria-controls="maintenance" aria-selected="false">Maintenance</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="diagnostics-tab" data-bs-toggle="tab" data-bs-target="#diagnostics" type="button" role="tab" aria-controls="diagnostics" aria-selected="false">Diagnostics</button>
+      </li>
+    </ul>
+    
+    <div class="tab-content" id="myTabContent">
+      <!-- Performance Tab -->
+      <div class="tab-pane fade show active" id="performance" role="tabpanel" aria-labelledby="performance-tab">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">CPU Usage</div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="cpu-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">Memory Usage</div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="memory-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">Motor Temperature</div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="motor-temp-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">Battery Level</div>
+              <div class="card-body">
+                <div class="chart-container">
+                  <canvas id="battery-chart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Alerts Tab -->
+      <div class="tab-pane fade" id="alerts" role="tabpanel" aria-labelledby="alerts-tab">
+        <div class="card">
+          <div class="card-header">Active Alerts</div>
+          <div class="card-body">
+            <div id="alerts-container">
+              <div class="text-center py-5 text-muted">
+                <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
+                <p class="mt-3">No active alerts</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Maintenance Tab -->
+      <div class="tab-pane fade" id="maintenance" role="tabpanel" aria-labelledby="maintenance-tab">
+        <div class="card">
+          <div class="card-header">Maintenance Schedule</div>
+          <div class="card-body">
+            <div id="maintenance-container">
+              <div class="text-center py-5 text-muted">
+                <i class="bi bi-wrench" style="font-size: 3rem;"></i>
+                <p class="mt-3">No maintenance items</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Diagnostics Tab -->
+      <div class="tab-pane fade" id="diagnostics" role="tabpanel" aria-labelledby="diagnostics-tab">
+        <div class="card">
+          <div class="card-header">System Diagnostics</div>
+          <div class="card-body">
+            <div class="mb-3">
+              <button id="run-diagnostics-btn" class="btn btn-primary">
+                <i class="bi bi-play-circle"></i> Run Diagnostics
+              </button>
+            </div>
+            <div id="diagnostics-results" class="mt-4">
+              <div class="text-center py-5 text-muted">
+                <i class="bi bi-clipboard-data" style="font-size: 3rem;"></i>
+                <p class="mt-3">No diagnostics results available</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Charts
+    const cpuChart = new Chart(document.getElementById('cpu-chart'), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'CPU Usage (%)',
+          data: [],
+          borderColor: 'rgb(75, 192, 192)',
+          tension: 0.1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+
+    const memoryChart = new Chart(document.getElementById('memory-chart'), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Memory Usage (%)',
+          data: [],
+          borderColor: 'rgb(153, 102, 255)',
+          tension: 0.1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+
+    const motorTempChart = new Chart(document.getElementById('motor-temp-chart'), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Motor Temperature (°C)',
+          data: [],
+          borderColor: 'rgb(255, 99, 132)',
+          tension: 0.1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+
+    const batteryChart = new Chart(document.getElementById('battery-chart'), {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Battery Level (%)',
+          data: [],
+          borderColor: 'rgb(54, 162, 235)',
+          tension: 0.1,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100
+          }
+        }
+      }
+    });
+
+    // Helper functions
+    function formatTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString();
+    }
+
+    function formatDuration(seconds) {
+      const hours = Math.floor(seconds / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      return `${hours}h ${minutes}m`;
+    }
+
+    function formatPercentage(value) {
+      return `${Math.round(value)}%`;
+    }
+
+    function formatTemperature(value) {
+      return `${Math.round(value)}°C`;
+    }
+
+    // Update UI with monitoring data
+    function updateSystemStatus(data) {
+      if (!data) return;
+      
+      document.getElementById('cpu-value').textContent = formatPercentage(data.system?.cpu || 0);
+      document.getElementById('memory-value').textContent = formatPercentage(data.system?.memory || 0);
+      document.getElementById('uptime-value').textContent = formatDuration(data.system?.uptime || 0);
+      document.getElementById('latency-value').textContent = `${Math.round(data.communication?.latency || 0)}ms`;
+    }
+
+    function updateBatteryStatus(data) {
+      if (!data) return;
+      
+      document.getElementById('battery-level').textContent = formatPercentage(data.level || 0);
+      document.getElementById('battery-voltage').textContent = `${data.voltage?.toFixed(1) || 0}V`;
+      document.getElementById('battery-temp').textContent = formatTemperature(data.temperature || 0);
+      document.getElementById('battery-runtime').textContent = formatDuration(data.estimatedRuntime || 0);
+    }
+
+    function updatePerformanceCharts(performanceData, batteryData) {
+      // Update CPU chart
+      if (performanceData && performanceData.length > 0) {
+        const cpuData = performanceData.map(item => ({
+          x: formatTimestamp(item.timestamp),
+          y: item.system.cpu
+        }));
+        
+        cpuChart.data.labels = cpuData.map(item => item.x);
+        cpuChart.data.datasets[0].data = cpuData.map(item => item.y);
+        cpuChart.update();
+        
+        const memoryData = performanceData.map(item => ({
+          x: formatTimestamp(item.timestamp),
+          y: item.system.memory
+        }));
+        
+        memoryChart.data.labels = memoryData.map(item => item.x);
+        memoryChart.data.datasets[0].data = memoryData.map(item => item.y);
+        memoryChart.update();
+        
+        const motorTempData = performanceData.map(item => ({
+          x: formatTimestamp(item.timestamp),
+          y: item.tractor.motorTemperature
+        }));
+        
+        motorTempChart.data.labels = motorTempData.map(item => item.x);
+        motorTempChart.data.datasets[0].data = motorTempData.map(item => item.y);
+        motorTempChart.update();
+      }
+      
+      // Update battery chart
+      if (batteryData && batteryData.length > 0) {
+        const batteryLevelData = batteryData.map(item => ({
+          x: formatTimestamp(item.timestamp),
+          y: item.level
+        }));
+        
+        batteryChart.data.labels = batteryLevelData.map(item => item.x);
+        batteryChart.data.datasets[0].data = batteryLevelData.map(item => item.y);
+        batteryChart.update();
+      }
+    }
+
+    function updateAlerts(alerts) {
+      const container = document.getElementById('alerts-container');
+      
+      if (!alerts || alerts.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-5 text-muted">
+            <i class="bi bi-check-circle" style="font-size: 3rem;"></i>
+            <p class="mt-3">No active alerts</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      alerts.forEach(alert => {
+        const alertClass = alert.resolved ? 'resolved' : alert.level;
+        const timestamp = new Date(alert.timestamp).toLocaleString();
+        
+        container.innerHTML += `
+          <div class="alert-item ${alertClass}">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-1">${alert.message}</h5>
+              <span class="badge bg-${getLevelBadgeColor(alert.level)}">${alert.level}</span>
+            </div>
+            <p class="mb-1 text-muted small">${timestamp}</p>
+            <p class="mb-0">${JSON.stringify(alert.details)}</p>
+            ${alert.resolved ? 
+              `<div class="mt-2 text-success"><i class="bi bi-check-circle"></i> Resolved</div>` : 
+              `<button class="btn btn-sm btn-outline-success mt-2 resolve-alert-btn" data-alert-id="${alert.id}">
+                <i class="bi bi-check-circle"></i> Resolve
+              </button>`
+            }
+          </div>
+        `;
+      });
+      
+      // Add event listeners to resolve buttons
+      document.querySelectorAll('.resolve-alert-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const alertId = button.getAttribute('data-alert-id');
+          resolveAlert(alertId);
+        });
+      });
+    }
+
+    function getLevelBadgeColor(level) {
+      switch (level) {
+        case 'critical': return 'danger';
+        case 'warning': return 'warning';
+        case 'info': return 'info';
+        default: return 'secondary';
+      }
+    }
+
+    function updateMaintenance(maintenance) {
+      const container = document.getElementById('maintenance-container');
+      
+      if (!maintenance || maintenance.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-5 text-muted">
+            <i class="bi bi-wrench" style="font-size: 3rem;"></i>
+            <p class="mt-3">No maintenance items</p>
+          </div>
+        `;
+        return;
+      }
+      
+      container.innerHTML = '';
+      
+      maintenance.forEach(item => {
+        const itemClass = item.status === 'due' ? 'due' : '';
+        
+        container.innerHTML += `
+          <div class="maintenance-item ${itemClass}">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="mb-1">${item.name}</h5>
+              <span class="badge bg-${item.status === 'due' ? 'danger' : 'primary'}">${item.status}</span>
+            </div>
+            <p class="mb-1">${item.description}</p>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <small class="text-muted">Interval: ${item.interval} hours | Current: ${Math.round(item.currentUsage)} hours</small>
+              <button class="btn btn-sm btn-outline-success complete-maintenance-btn" data-maintenance-id="${item.id}">
+                <i class="bi bi-check-circle"></i> Mark Complete
+              </button>
+            </div>
+          </div>
+        `;
+      });
+      
+      // Add event listeners to complete buttons
+      document.querySelectorAll('.complete-maintenance-btn').forEach(button => {
+        button.addEventListener('click', () => {
+          const maintenanceId = button.getAttribute('data-maintenance-id');
+          completeMaintenance(maintenanceId);
+        });
+      });
+    }
+
+    function updateDiagnosticsResults(results) {
+      const container = document.getElementById('diagnostics-results');
+      
+      if (!results) {
+        container.innerHTML = `
+          <div class="text-center py-5 text-muted">
+            <i class="bi bi-clipboard-data" style="font-size: 3rem;"></i>
+            <p class="mt-3">No diagnostics results available</p>
+          </div>
+        `;
+        return;
+      }
+      
+      const timestamp = new Date(results.timestamp).toLocaleString();
+      
+      container.innerHTML = `
+        <div class="alert alert-${results.summary.failed > 0 ? 'warning' : 'success'}">
+          <h5>Diagnostics Results</h5>
+          <p>Timestamp: ${timestamp}</p>
+          <p>
+            Tests: ${results.summary.total} |
+            Passed: ${results.summary.passed} |
+            Failed: ${results.summary.failed}
+          </p>
+        </div>
+        <div class="accordion" id="diagnosticsAccordion">
+          ${Object.keys(results.results).map((key, index) => {
+            const result = results.results[key];
+            const status = result.status === 'pass' ? 'success' : 'danger';
+            
+            return `
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="heading${index}">
+                  <button class="accordion-button ${result.status !== 'pass' ? '' : 'collapsed'}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse${index}" aria-expanded="${result.status !== 'pass'}" aria-controls="collapse${index}">
+                    <span class="badge bg-${status} me-2">${result.status.toUpperCase()}</span>
+                    ${key.charAt(0).toUpperCase() + key.slice(1)} Diagnostics
+                  </button>
+                </h2>
+                <div id="collapse${index}" class="accordion-collapse collapse ${result.status !== 'pass' ? 'show' : ''}" aria-labelledby="heading${index}" data-bs-parent="#diagnosticsAccordion">
+                  <div class="accordion-body">
+                    <p>Tests Run: ${result.details.testsRun} | Passed: ${result.details.testsPassed} | Warnings: ${result.details.warnings} | Errors: ${result.details.errors}</p>
+                    <table class="table table-sm">
+                      <thead>
+                        <tr>
+                          <th>Test</th>
+                          <th>Status</th>
+                          <th>Value</th>
+                          <th>Message</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        ${result.details.tests.map(test => `
+                          <tr>
+                            <td>${test.name}</td>
+                            <td><span class="badge bg-${test.status === 'pass' ? 'success' : test.status === 'warning' ? 'warning' : 'danger'}">${test.status}</span></td>
+                            <td>${test.value}</td>
+                            <td>${test.message || ''}</td>
+                          </tr>
+                        `).join('')}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    // API functions
+    async function fetchData() {
+      try {
+        // Fetch status
+        const statusResponse = await fetch('/api/dashboard/status');
+        const status = await statusResponse.json();
+        
+        // Fetch metrics
+        const metricsResponse = await fetch('/api/dashboard/metrics');
+        const metrics = await metricsResponse.json();
+        
+        // Fetch alerts
+        const alertsResponse = await fetch('/api/dashboard/alerts');
+        const alerts = await alertsResponse.json();
+        
+        // Fetch maintenance
+        const maintenanceResponse = await fetch('/api/dashboard/maintenance');
+        const maintenance = await maintenanceResponse.json();
+        
+        // Update UI
+        updateSystemStatus(metrics.performance[metrics.performance.length - 1]);
+        updateBatteryStatus(metrics.battery[metrics.battery.length - 1]);
+        updatePerformanceCharts(metrics.performance, metrics.battery);
+        updateAlerts(alerts);
+        updateMaintenance(maintenance);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    }
+
+    async function runDiagnostics() {
+      try {
+        const response = await fetch('/api/dashboard/diagnostics', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({})
+        });
+        
+        const results = await response.json();
+        updateDiagnosticsResults(results);
+      } catch (error) {
+        console.error('Error running diagnostics:', error);
+      }
+    }
+
+    async function resolveAlert(alertId) {
+      try {
+        const response = await fetch(`/api/dashboard/alerts/${alertId}/resolve`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            resolution: {
+              resolvedBy: 'dashboard',
+              notes: 'Resolved from dashboard'
+            }
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Refresh alerts
+          const alertsResponse = await fetch('/api/dashboard/alerts');
+          const alerts = await alertsResponse.json();
+          updateAlerts(alerts);
+        }
+      } catch (error) {
+        console.error('Error resolving alert:', error);
+      }
+    }
+
+    async function completeMaintenance(maintenanceId) {
+      try {
+        const response = await fetch(`/api/dashboard/maintenance/${maintenanceId}/complete`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+          // Refresh maintenance
+          const maintenanceResponse = await fetch('/api/dashboard/maintenance');
+          const maintenance = await maintenanceResponse.json();
+          updateMaintenance(maintenance);
+        }
+      } catch (error) {
+        console.error('Error completing maintenance:', error);
+      }
+    }
+
+    // Event listeners
+    document.getElementById('refresh-btn').addEventListener('click', fetchData);
+    document.getElementById('run-diagnostics-btn').addEventListener('click', runDiagnostics);
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Update connection status
+      const connectionStatus = document.getElementById('connection-status');
+      connectionStatus.textContent = 'Connected';
+      connectionStatus.classList.remove('bg-danger');
+      connectionStatus.classList.add('bg-success');
+      
+      // Fetch initial data
+      fetchData();
+    });
+  </script>
+</body>
+</html>

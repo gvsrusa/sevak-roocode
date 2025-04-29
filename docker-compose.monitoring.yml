@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  monitoring:
+    build:
+      context: .
+      dockerfile: Dockerfile.monitoring
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/api/monitoring/status"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

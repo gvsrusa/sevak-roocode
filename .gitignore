@@ -37,6 +37,28 @@ local.properties
 # node.js
 #
 node_modules/
+mobile-app/node_modules/
+mobile-app/package-lock.json
+mobile-app/yarn-error.log
+mobile-app/coverage/
+mobile-app/coverage-final.json
+mobile-app/coverage-*.json
+mobile-app/coverage-*.lcov
+mobile-app/coverage-*.json
+mobile-app/coverage-*.lcov.info
+mobile-app/coverage-*.info
+mobile-app/coverage-*.out
+mobile-app/coverage-*.out.info
+mobile-app/coverage-*.out.json
+mobile-app/coverage-*.out.lcov
+mobile-app/coverage-*.out.lcov.info
+mobile-app/coverage-*.out.info.json
+mobile-app/coverage-*.out.info.lcov     
+mobile-app/coverage-*.out.info.lcov.info
+mobile-app/coverage-*.out.info.json
+mobile-app/coverage-*.out.info.lcov.json
+mobile-app/coverage-*.out.info.lcov.info.json
+mobile-app/coverage-*.out.info.lcov.info.json           
 npm-debug.log
 yarn-error.log
 
