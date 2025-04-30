@@ -18,78 +18,71 @@ import SocialSignIn from '../components/SocialSignIn';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 /**
- * LoginScreen component for user authentication
- * Supports email/password login and social sign-in
+ * RegisterScreen component for user registration
+ * Supports email/password registration and social sign-in
  */
-const LoginScreen: React.FC = () => {
+const RegisterScreen: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
   const { t } = useTranslation();
-  const { login, resetPassword } = useSupabaseAuthStore();
+  const { register } = useSupabaseAuthStore();
 
   /**
-   * Handle email/password login
+   * Handle email/password registration
    */
-  const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert(t('auth.error'), t('auth.emailPasswordRequired'));
+  const handleRegister = async () => {
+    // Validate inputs
+    if (!email || !password || !confirmPassword || !fullName) {
+      Alert.alert(t('auth.error'), t('auth.allFieldsRequired'));
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert(t('auth.error'), t('auth.passwordsDoNotMatch'));
+      return;
+    }
+
+    if (password.length < 8) {
+      Alert.alert(t('auth.error'), t('auth.passwordTooShort'));
       return;
     }
 
     try {
       setLoading(true);
       
-      // Sign in with email and password using the auth store
-      const success = await login(email, password);
+      // Register with email and password using the auth store
+      const success = await register(email, password, fullName);
 
       if (success) {
-        // Navigate to dashboard on successful login
-        navigation.navigate('Dashboard' as never);
-      }
-    } catch (error: any) {
-      console.error('Login error:', error.message);
-      Alert.alert(t('auth.error'), t('auth.invalidCredentials'));
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  /**
-   * Handle forgot password
-   */
-  const handleForgotPassword = async () => {
-    if (!email) {
-      Alert.alert(t('auth.error'), t('auth.emailRequired'));
-      return;
-    }
-
-    try {
-      setLoading(true);
-      
-      // Send password reset email using the auth store
-      const success = await resetPassword(email);
-
-      if (success) {
+        // Show success message
         Alert.alert(
-          t('auth.passwordResetSent'),
-          t('auth.passwordResetInstructions')
+          t('auth.registrationSuccess'),
+          t('auth.verifyEmail'),
+          [
+            {
+              text: t('common.ok'),
+              onPress: () => navigation.navigate('Login' as never),
+            },
+          ]
         );
       }
     } catch (error: any) {
-      console.error('Password reset error:', error.message);
-      Alert.alert(t('auth.error'), t('auth.passwordResetFailed'));
+      console.error('Registration error:', error.message);
+      Alert.alert(t('auth.error'), error.message || t('auth.registrationFailed'));
     } finally {
       setLoading(false);
     }
   };
 
   /**
-   * Navigate to registration screen
+   * Navigate to login screen
    */
-  const navigateToRegister = () => {
-    navigation.navigate('Register' as never);
+  const navigateToLogin = () => {
+    navigation.navigate('Login' as never);
   };
 
   /**
@@ -119,11 +112,23 @@ const LoginScreen: React.FC = () => {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.headerContainer}>
-            <Text style={styles.title}>{t('auth.welcomeBack')}</Text>
-            <Text style={styles.subtitle}>{t('auth.loginToContinue')}</Text>
+            <Text style={styles.title}>{t('auth.createAccount')}</Text>
+            <Text style={styles.subtitle}>{t('auth.registerToContinue')}</Text>
           </View>
 
           <View style={styles.formContainer}>
+            {/* Full Name Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>{t('auth.fullName')}</Text>
+              <TextInput
+                style={styles.input}
+                value={fullName}
+                onChangeText={setFullName}
+                placeholder={t('auth.enterFullName')}
+                autoCapitalize="words"
+              />
+            </View>
+
             {/* Email Input */}
             <View style={styles.inputContainer}>
               <Text style={styles.label}>{t('auth.email')}</Text>
@@ -150,26 +155,28 @@ const LoginScreen: React.FC = () => {
               />
             </View>
 
-            {/* Forgot Password */}
-            <TouchableOpacity
-              style={styles.forgotPasswordContainer}
-              onPress={handleForgotPassword}
-            >
-              <Text style={styles.forgotPasswordText}>
-                {t('auth.forgotPassword')}
-              </Text>
-            </TouchableOpacity>
+            {/* Confirm Password Input */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>{t('auth.confirmPassword')}</Text>
+              <TextInput
+                style={styles.input}
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                placeholder={t('auth.enterConfirmPassword')}
+                secureTextEntry
+              />
+            </View>
 
-            {/* Login Button */}
+            {/* Register Button */}
             <TouchableOpacity
-              style={styles.loginButton}
-              onPress={handleLogin}
+              style={styles.registerButton}
+              onPress={handleRegister}
               disabled={loading}
             >
               {loading ? (
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
-                <Text style={styles.loginButtonText}>{t('auth.login')}</Text>
+                <Text style={styles.registerButtonText}>{t('auth.register')}</Text>
               )}
             </TouchableOpacity>
 
@@ -179,13 +186,13 @@ const LoginScreen: React.FC = () => {
               onError={handleSocialSignInError}
             />
 
-            {/* Register Link */}
-            <View style={styles.registerContainer}>
-              <Text style={styles.registerText}>
-                {t('auth.dontHaveAccount')}
+            {/* Login Link */}
+            <View style={styles.loginContainer}>
+              <Text style={styles.loginText}>
+                {t('auth.alreadyHaveAccount')}
               </Text>
-              <TouchableOpacity onPress={navigateToRegister}>
-                <Text style={styles.registerLink}>{t('auth.register')}</Text>
+              <TouchableOpacity onPress={navigateToLogin}>
+                <Text style={styles.loginLink}>{t('auth.login')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -243,15 +250,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#F9F9F9',
   },
-  forgotPasswordContainer: {
-    alignSelf: 'flex-end',
-    marginBottom: 20,
-  },
-  forgotPasswordText: {
-    fontSize: 14,
-    color: '#007AFF',
-  },
-  loginButton: {
+  registerButton: {
     height: 50,
     backgroundColor: '#007AFF',
     borderRadius: 8,
@@ -259,21 +258,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 20,
   },
-  loginButtonText: {
+  registerButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
   },
-  registerContainer: {
+  loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
   },
-  registerText: {
+  loginText: {
     fontSize: 14,
     color: '#666666',
   },
-  registerLink: {
+  loginLink: {
     fontSize: 14,
     color: '#007AFF',
     fontWeight: '600',
@@ -281,4 +280,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LoginScreen;
+export default RegisterScreen;

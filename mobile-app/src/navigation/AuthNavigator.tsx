@@ -1,45 +1,35 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { i18n } from '../utils/i18n';
-
-// Import screens
 import LoginScreen from '../screens/LoginScreen';
+import RegisterScreen from '../screens/RegisterScreen';
 import ForgotPasswordScreen from '../screens/ForgotPasswordScreen';
 
-// Create stack navigator
-const Stack = createStackNavigator();
+// Define the authentication stack parameter list
+export type AuthStackParamList = {
+  Login: undefined;
+  Register: undefined;
+  ForgotPassword: undefined;
+};
+
+// Create the authentication stack navigator
+const Stack = createStackNavigator<AuthStackParamList>();
 
 /**
- * Authentication navigation stack
+ * AuthNavigator component for handling authentication flow
+ * Includes Login, Register, and ForgotPassword screens
  */
 const AuthNavigator: React.FC = () => {
   return (
     <Stack.Navigator
+      initialRouteName="Login"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: '#4CAF50',
-        },
-        headerTintColor: '#fff',
-        headerTitleStyle: {
-          fontWeight: 'bold',
-        },
+        headerShown: false,
+        cardStyle: { backgroundColor: '#FFFFFF' },
       }}
     >
-      <Stack.Screen 
-        name="Login" 
-        component={LoginScreen} 
-        options={{ 
-          title: i18n.t('login'),
-          headerShown: false,
-        }} 
-      />
-      <Stack.Screen 
-        name="ForgotPassword" 
-        component={ForgotPasswordScreen} 
-        options={{ 
-          title: i18n.t('forgotPassword'),
-        }} 
-      />
+      <Stack.Screen name="Login" component={LoginScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
     </Stack.Navigator>
   );
 };

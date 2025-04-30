@@ -1,183 +1,136 @@
 # Sevak Mini Tractor Control System
 
-![Sevak Mini Tractor](https://via.placeholder.com/800x400?text=Sevak+Mini+Tractor)
-
 ## Overview
 
-The Sevak Mini Tractor is an autonomous agricultural vehicle designed for small-scale farming operations. This repository contains the control software for the tractor, including the tractor control system and mobile application for remote operation.
+The Sevak Mini Tractor Control System is a comprehensive solution for controlling and monitoring autonomous mini tractors. It provides a robust backend system with real-time monitoring, safety features, and a mobile app interface.
 
-### Key Features
+## Features
 
-- **Autonomous Navigation**: GPS and sensor-based navigation for automated field operations
-- **Fodder Operations**: Automated cutting, loading, and unloading of fodder
-- **Remote Control**: Mobile app for manual control and monitoring
-- **Safety Systems**: Comprehensive safety features including boundary enforcement and emergency stop
-- **Secure Communication**: Certificate-based authentication and encrypted communication
-- **Offline Operation**: Queue commands for execution when connectivity is restored
+- **Autonomous Navigation**: Path planning and obstacle avoidance
+- **Safety Monitoring**: Real-time safety checks and emergency stop capabilities
+- **Mobile App Integration**: Control the tractor remotely via a mobile app
+- **Monitoring System**: Track performance metrics and receive alerts
+- **User Authentication**: Secure login with email/password and Google Sign-In
+- **RESTful API**: Comprehensive API for integration with other systems
 
-## System Architecture
-
-The system consists of two main components:
-
-1. **Tractor Control System**: Node.js-based server running on the tractor that controls motors, sensors, and implements
-2. **Mobile Application**: React Native app for remote control and monitoring
-
-### Communication
-
-The system uses secure WebSocket and Socket.IO connections for real-time bidirectional communication between the tractor and mobile app. All communications are encrypted and authenticated using certificates.
-
-## Installation
+## Getting Started
 
 ### Prerequisites
 
 - Node.js (v16.0.0 or higher)
 - npm (v7.0.0 or higher)
-- OpenSSL (for certificate generation)
-- React Native development environment (for mobile app)
+- Supabase account (for authentication and database)
 
-### Automated Installation
+### Installation
 
-The easiest way to install and run the system is using the provided deployment script:
+1. Clone the repository:
+   ```
+   git clone https://github.com/your-username/sevak-tractor-control.git
+   cd sevak-tractor-control
+   ```
 
-```bash
-# Clone the repository
-git clone https://github.com/sevak-tractor/sevak-roocode.git
-cd sevak-roocode
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-# Make the deployment script executable
-chmod +x deploy.sh
+3. Create a `.env` file in the root directory with the following variables:
+   ```
+   # Supabase Configuration
+   SUPABASE_URL=https://your-supabase-url.supabase.co
+   SUPABASE_KEY=your-supabase-anon-key
 
-# Run the deployment script
-./deploy.sh
-```
+   # Server Configuration
+   PORT=3000
+   NODE_ENV=development
 
-### Manual Installation
+   # JWT Secret
+   JWT_SECRET=your-jwt-secret-key
 
-For manual installation, follow these steps:
+   # Google OAuth Configuration
+   GOOGLE_CLIENT_ID=your-google-client-id
+   GOOGLE_CLIENT_SECRET=your-google-client-secret
+   ```
 
-```bash
-# Clone the repository
-git clone https://github.com/sevak-tractor/sevak-roocode.git
-cd sevak-roocode
+4. Start the development server:
+   ```
+   npm run dev
+   ```
 
-# Install server dependencies
-npm install
+## Supabase Setup
 
-# Install mobile app dependencies
-cd mobile-app
-npm install
-cd ..
+1. Create a new project on [Supabase](https://supabase.com/)
+2. Go to the "Settings" > "API" section to get your API URL and anon key
+3. Set up authentication providers:
+   - Email/Password: Enable in the Authentication > Settings section
+   - Google: Configure in the Authentication > Providers section
+4. Create the necessary database tables:
+   - Users table (created automatically by Supabase Auth)
+   - Any additional tables for your application
 
-# Generate certificates
-mkdir -p certs/clients
-# Generate CA key and certificate
-openssl genrsa -out certs/ca.key 2048
-openssl req -x509 -new -nodes -key certs/ca.key -sha256 -days 1024 -out certs/ca.crt -subj "/CN=Sevak-CA/O=Sevak Tractor/C=IN"
-# Generate server key and certificate
-openssl genrsa -out certs/server.key 2048
-openssl req -new -key certs/server.key -out certs/server.csr -subj "/CN=localhost/O=Sevak Tractor/C=IN"
-openssl x509 -req -in certs/server.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/server.crt -days 365 -sha256
-# Generate client certificate
-openssl genrsa -out certs/clients/client1.key 2048
-openssl req -new -key certs/clients/client1.key -out certs/clients/client1.csr -subj "/CN=client1/O=Sevak Tractor/C=IN"
-openssl x509 -req -in certs/clients/client1.csr -CA certs/ca.crt -CAkey certs/ca.key -CAcreateserial -out certs/clients/client1.crt -days 365 -sha256
+## Google Sign-In Setup
 
-# Run tests
-npm test
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project
+3. Navigate to "APIs & Services" > "Credentials"
+4. Create an OAuth 2.0 Client ID
+5. Configure the authorized redirect URIs:
+   - Add `https://your-supabase-url.supabase.co/auth/v1/callback`
+   - Add `http://localhost:3000/api/v1/auth/google/callback` for local development
+6. Copy the Client ID and Client Secret to your `.env` file
 
-# Start the server
-npm start
-```
+## API Documentation
 
-## Usage
+### Authentication Endpoints
 
-### Starting the Server
+- `POST /api/v1/auth/register` - Register a new user
+- `POST /api/v1/auth/login` - Login with email and password
+- `GET /api/v1/auth/google` - Initiate Google Sign-In
+- `GET /api/v1/auth/google/callback` - Google Sign-In callback
+- `POST /api/v1/auth/logout` - Logout user
+- `POST /api/v1/auth/reset-password` - Send password reset email
+- `GET /api/v1/auth/user` - Get current user information
 
-```bash
-npm start
-```
+### Control Endpoints
 
-For development with auto-restart on file changes:
+- `POST /api/v1/control/move` - Move the tractor
+- `POST /api/v1/control/stop` - Stop the tractor
+- `POST /api/v1/control/emergency-stop` - Emergency stop
 
-```bash
-npm run dev
-```
+### Navigation Endpoints
 
-### Running the Mobile App
+- `GET /api/v1/navigation/status` - Get navigation status
+- `POST /api/v1/navigation/waypoints` - Set navigation waypoints
+- `POST /api/v1/navigation/start` - Start navigation
+- `POST /api/v1/navigation/stop` - Stop navigation
+- `POST /api/v1/navigation/boundaries` - Set field boundaries
+- `GET /api/v1/navigation/boundaries` - Get field boundaries
 
-```bash
-cd mobile-app
-npm run android  # For Android
-# or
-npm run ios      # For iOS
-```
+### Sensors Endpoints
 
-### Connecting to the Tractor
+- `GET /api/v1/sensors` - Get all sensor data
+- `GET /api/v1/sensors/:id` - Get specific sensor data
+- `GET /api/v1/sensors/gps` - Get GPS data
+- `GET /api/v1/sensors/imu` - Get IMU data
+- `GET /api/v1/sensors/proximity` - Get proximity sensor data
+- `GET /api/v1/sensors/camera` - Get camera data
 
-1. Launch the mobile app
-2. Enter the tractor's IP address or hostname
-3. Connect using the provided client certificate
-4. Authenticate with your credentials
-5. Use the control interface to operate the tractor
+### Safety Endpoints
 
-## Documentation
+- `GET /api/v1/safety/status` - Get safety status
+- `GET /api/v1/safety/limits` - Get safety limits
+- `POST /api/v1/safety/limits` - Update safety limits
 
-Detailed documentation is available in the `docs` directory:
+### Monitoring Endpoints
 
-- [Project Overview](docs/1_overview_project.md)
-- [Technical Specifications](docs/2_technical_specifications.md)
-- [User Manual](docs/3_user_manual.md)
-- [Installation and Setup](docs/4_installation_setup.md)
-- [Security Features](docs/5_security_features.md)
-- [Maintenance Guide](docs/6_maintenance_guide.md)
-- [Troubleshooting Guide](docs/7_troubleshooting_guide.md)
-- [Developer Documentation](docs/8_developer_documentation.md)
-- [API Documentation](docs/9_api_documentation.md)
-- [Deployment Guide](docs/deployment_guide.md)
-
-## Testing
-
-The system includes comprehensive tests:
-
-- **Unit Tests**: Test individual components in isolation
-- **Integration Tests**: Test interactions between components
-- **System Tests**: Test the complete system functionality
-- **Security Tests**: Test security features and vulnerabilities
-
-Run the tests with:
-
-```bash
-npm test
-```
-
-## Security
-
-The Sevak Mini Tractor implements several security features:
-
-- **Certificate-based Authentication**: Mutual TLS authentication between tractor and mobile app
-- **Command Signing**: All commands are signed to prevent tampering
-- **Encrypted Communication**: All data is encrypted during transmission
-- **Session Management**: Secure session handling with token expiration
-- **Multi-factor Authentication**: Optional biometric authentication for critical commands
-- **Boundary Enforcement**: Geofencing to prevent operation outside defined boundaries
-- **Emergency Stop**: Remote and automatic emergency stop capabilities
-
-## Contributing
-
-Contributions are welcome! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- `GET /api/v1/monitoring/status` - Get monitoring status
+- `GET /api/v1/monitoring/metrics/:type?` - Get metrics
+- `GET /api/v1/monitoring/alerts` - Get alerts
+- `GET /api/v1/monitoring/maintenance` - Get maintenance schedule
+- `POST /api/v1/monitoring/diagnostics` - Run diagnostics
+- `POST /api/v1/monitoring/alerts/:id/resolve` - Resolve alert
+- `POST /api/v1/monitoring/maintenance/:id/complete` - Complete maintenance task
 
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- The Sevak Tractor Team
-- Contributors and testers
-- Open source community for libraries and tools used in this project

@@ -44,7 +44,8 @@ class ApiModule {
             navigation: '/api/v1/navigation',
             sensors: '/api/v1/sensors',
             safety: '/api/v1/safety',
-            monitoring: '/api/v1/monitoring'
+            monitoring: '/api/v1/monitoring',
+            auth: '/api/v1/auth'
           }
         }
       });

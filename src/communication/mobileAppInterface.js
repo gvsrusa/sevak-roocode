@@ -19,6 +19,11 @@ const socketIo = require('socket.io');
 const zlib = require('zlib');  // For message compression
 const express = require('express');  // Added Express for RESTful API
 const bodyParser = require('body-parser');  // For parsing JSON request bodies
+const cookieParser = require('cookie-parser'); // For parsing cookies
+const dotenv = require('dotenv'); // For loading environment variables
+
+// Load environment variables
+dotenv.config();
 
 // Message compression threshold in bytes
 const COMPRESSION_THRESHOLD = 1024;
@@ -37,6 +42,7 @@ class MobileAppInterface {
     this.app = express();
     this.app.use(bodyParser.json());
     this.app.use(bodyParser.urlencoded({ extended: true }));
+    this.app.use(cookieParser());
     
     // WebSocket server
     this.wss = null;

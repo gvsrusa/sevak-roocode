@@ -14,6 +14,7 @@ const navigationController = require('./controllers/navigationController');
 const sensorsController = require('./controllers/sensorsController');
 const safetyController = require('./controllers/safetyController');
 const monitoringController = require('./controllers/monitoringController');
+const authController = require('./controllers/authController');
 
 // Status endpoints
 router.get('/status', statusController.getStatus);
@@ -53,5 +54,14 @@ router.get('/monitoring/maintenance', monitoringController.getMaintenanceSchedul
 router.post('/monitoring/diagnostics', monitoringController.runDiagnostics);
 router.post('/monitoring/alerts/:id/resolve', monitoringController.resolveAlert);
 router.post('/monitoring/maintenance/:id/complete', monitoringController.completeMaintenanceTask);
+
+// Authentication endpoints
+router.post('/auth/register', authController.register);
+router.post('/auth/login', authController.login);
+router.get('/auth/google', authController.googleSignIn);
+router.get('/auth/google/callback', authController.googleCallback);
+router.post('/auth/logout', authController.logout);
+router.post('/auth/reset-password', authController.resetPassword);
+router.get('/auth/user', authController.getCurrentUser);
 
 module.exports = router;
