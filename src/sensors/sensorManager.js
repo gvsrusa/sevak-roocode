@@ -106,11 +106,31 @@ class SensorManager {
     
     // Sensor update intervals (in milliseconds)
     this.updateIntervals = {
-      gps: config.sensors.gps.updateInterval,
-      imu: config.sensors.imu.updateInterval,
-      lidar: config.sensors.lidar.updateInterval,
-      ultrasonicSensors: config.sensors.ultrasonicSensors.updateInterval,
-/**
+      gps: config.sensors.gps?.updateInterval || 1000,
+      imu: config.sensors.imu?.updateInterval || 100,
+      lidar: 500, // Default value since config.sensors.lidar is undefined
+      ultrasonicSensors: 200, // Default value since config.sensors.ultrasonicSensors is undefined
+      temperatureSensors: 5000, // Default value since config.sensors.temperatureSensors is undefined
+      powerMonitors: 1000, // Default value since config.sensors.powerMonitors is undefined
+      camera: config.sensors.camera?.updateInterval || 500
+    };
+    
+    // Sensor update timers
+    this.updateTimers = {};
+    
+    // Sensor error counters
+    this.errorCounters = {};
+    
+    // Sensor connection status
+    this.connectionStatus = {
+      allSensorsConnected: false,
+      criticalSensorsConnected: false
+    };
+    
+    this.logger.info('Sensor Manager initialized');
+  }
+  
+  /**
    * Initialize all sensors
    */
   async initialize() {
@@ -967,22 +987,3 @@ class SensorManager {
 }
 
 module.exports = SensorManager;
-      temperatureSensors: config.sensors.temperatureSensors.updateInterval,
-      powerMonitors: config.sensors.powerMonitors.updateInterval,
-      camera: config.sensors.camera.updateInterval
-    };
-    
-    // Sensor update timers
-    this.updateTimers = {};
-    
-    // Sensor error counters
-    this.errorCounters = {};
-    
-    // Sensor connection status
-    this.connectionStatus = {
-      allSensorsConnected: false,
-      criticalSensorsConnected: false
-    };
-    
-    this.logger.info('Sensor Manager initialized');
-  }

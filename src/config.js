@@ -12,6 +12,14 @@ const config = {
     logLevel: 'info', // 'debug', 'info', 'warn', 'error'
   },
   
+  // Logging configuration
+  logging: {
+    level: 'INFO', // 'DEBUG', 'INFO', 'WARN', 'ERROR', 'CRITICAL'
+    logToFile: false,
+    logFilePath: './logs/sevak.log',
+    logRotationSize: 10 * 1024 * 1024 // 10 MB
+  },
+  
   // Sensor configuration
   sensors: {
     updateInterval: 100, // ms

@@ -29,19 +29,19 @@ class SafetyMonitor {
         communicationLoss: false,
         watchdogTimeout: false
       },
-      failSafeMode: config.safety.failSafeMode,
+      failSafeMode: config.safety?.failSafeMode || 'stop', // Default to 'stop' if not in config
       lastEmergencyStop: null,
       lastSafetyCheck: Date.now()
     };
     
-    // Safety thresholds
+    // Safety thresholds (with default values if not in config)
     this.thresholds = {
-      obstacleSafeDistance: config.safety.obstacleSafeDistance,
-      humanSafeDistance: config.safety.humanSafeDistance,
-      maxSlopeAngle: config.safety.maxSlopeAngle,
-      batteryLowThreshold: config.safety.batteryLowThreshold,
-      batteryCriticalThreshold: config.safety.batteryCriticalThreshold,
-      watchdogTimeout: config.safety.watchdogTimeout
+      obstacleSafeDistance: config.safety?.obstacleSafeDistance || 1.0, // meters
+      humanSafeDistance: config.safety?.humanSafeDistance || 2.0, // meters
+      maxSlopeAngle: config.safety?.maxSlopeAngle || 15, // degrees
+      batteryLowThreshold: config.safety?.batteryLowThreshold || 20, // percent
+      batteryCriticalThreshold: config.safety?.batteryCriticalThreshold || 10, // percent
+      watchdogTimeout: config.safety?.watchdogTimeout || 1000 // ms
     };
     
     // Watchdog timer
@@ -258,8 +258,8 @@ class SafetyMonitor {
     Object.keys(data.motors).forEach(motorName => {
       const motor = data.motors[motorName];
       
-      // Check temperature
-      if (motor.temperature > config.sensors.temperatureSensors.criticalThreshold) {
+      // Check temperature (default to 70°C if not in config)
+      if (motor.temperature > (config.sensors.temperatureSensors?.criticalThreshold || 70)) {
         motorOverheat = true;
       }
       

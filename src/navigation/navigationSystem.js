@@ -51,14 +51,15 @@ class NavigationSystem {
     
     // Navigation parameters
     this.params = {
-      waypointReachedThreshold: config.navigation.waypointReachedThreshold,
-      pathPlanningResolution: config.navigation.pathPlanningResolution,
-      obstacleAvoidanceMargin: config.navigation.obstacleAvoidanceMargin,
-      maxPathfindingIterations: config.navigation.maxPathfindingIterations,
-      geofencingMargin: config.navigation.geofencingMargin
+      waypointReachedThreshold: config.navigation.waypointReachedThreshold || 1.0,
+      pathPlanningResolution: config.navigation.pathPlanningResolution || 0.5,
+      obstacleAvoidanceMargin: config.navigation.obstacleAvoidanceMargin || 1.0,
+      maxPathfindingIterations: config.navigation.maxPathfindingIterations || 1000,
+      geofencingMargin: config.navigation.geofencingMargin || 2.0
     };
-    
-/**
+  }
+  
+  /**
    * Initialize the navigation system
    */
   async initialize() {

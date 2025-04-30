@@ -17,6 +17,8 @@ const fs = require('fs');
 const path = require('path');
 const socketIo = require('socket.io');
 const zlib = require('zlib');  // For message compression
+const express = require('express');  // Added Express for RESTful API
+const bodyParser = require('body-parser');  // For parsing JSON request bodies
 
 // Message compression threshold in bytes
 const COMPRESSION_THRESHOLD = 1024;
@@ -30,6 +32,11 @@ class MobileAppInterface {
     
     // Security manager
     this.securityManager = new SecurityManager();
+    
+    // Express app
+    this.app = express();
+    this.app.use(bodyParser.json());
+    this.app.use(bodyParser.urlencoded({ extended: true }));
     
     // WebSocket server
     this.wss = null;
@@ -96,6 +103,9 @@ class MobileAppInterface {
       // Initialize security manager
       await this.securityManager.initialize();
       
+      // Initialize API
+      this._initializeApi();
+      
       // Start secure WebSocket server
       await this._startSecureWebSocketServer();
       
@@ -114,6 +124,26 @@ class MobileAppInterface {
   }
   
   /**
+   * Initialize the RESTful API
+   * @private
+   */
+  _initializeApi() {
+    try {
+      // Import API module
+      const ApiModule = require('../api');
+      
+      // Create and mount API
+      const apiModule = new ApiModule(this.app, this.logger);
+      apiModule.mount('/api');
+      
+      this.logger.info('API mounted successfully at /api');
+    } catch (error) {
+      this.logger.error(`Failed to initialize API: ${error.message}`);
+      throw error;
+    }
+  }
+  
+  /**
    * Start secure WebSocket server with TLS
    * @private
    */
@@ -123,8 +153,15 @@ class MobileAppInterface {
         // Create HTTPS server with TLS options
         const tlsOptions = this.securityManager.getTlsOptions();
         
-        // Create HTTPS server
-        this.httpsServer = https.createServer(tlsOptions);
+        // Create HTTPS server with Express app
+        try {
+          this.httpsServer = https.createServer(tlsOptions, this.app);
+        } catch (error) {
+          this.logger.error(`Failed to create HTTPS server: ${error.message}`);
+          // Create a fallback HTTP server for development
+          this.logger.info('Creating fallback HTTP server for development');
+          this.httpsServer = require('http').createServer(this.app);
+        }
         
         // Create WebSocket server on top of HTTPS server
         this.wss = new WebSocket.Server({
@@ -179,10 +216,10 @@ class MobileAppInterface {
    * @private
    */
   _startSessionCleanup() {
-    // Clean up expired sessions periodically
+    // Clean up expired sessions periodically (default to 5 minutes if not in config)
     this.sessionCleanupInterval = setInterval(() => {
       this.securityManager.cleanupExpiredSessions();
-    }, config.security.session.sessionCleanupInterval);
+    }, config.security?.session?.sessionCleanupInterval || 300000); // 5 minutes
   }
   
   /**
@@ -290,7 +327,7 @@ class MobileAppInterface {
         data: {
           message: 'Welcome to Sevak Mini Tractor Control System',
           requiresAuth: true,
-          version: config.version,
+          version: config.system?.version || '1.0.0',
           clientId: clientInfo.id
         }
       });
@@ -351,7 +388,7 @@ class MobileAppInterface {
       socket.emit('WELCOME', {
         message: 'Welcome to Sevak Mini Tractor Control System',
         requiresAuth: true,
-        version: config.version,
+        version: config.system?.version || '1.0.0',
         clientId: tempClientId
       });
       
@@ -661,7 +698,8 @@ class MobileAppInterface {
       }
       
       // Verify token (in a real implementation, this would verify against a token database)
-      if (data.token === config.communication.mobileApp.authToken) {
+      // Default to a test token if not in config
+      if (data.token === (config.communication.mobileApp?.authToken || 'test-token')) {
         // Generate secure session token
         const sessionInfo = this.securityManager.generateSessionToken(clientInfo.id);
         
@@ -684,8 +722,8 @@ class MobileAppInterface {
           message: 'Invalid authentication token'
         });
         
-        // Log security event
-        if (config.security.logging.logFailedAuthAttempts) {
+        // Log security event (default to true if not in config)
+        if (config.security?.logging?.logFailedAuthAttempts !== false) {
           this.logger.warn(`Authentication failed for Socket.IO client ${clientInfo.id}`);
         }
       }
@@ -727,8 +765,8 @@ class MobileAppInterface {
             return;
           }
           
-          // Add safety checks
-          if (command.data.speed > config.motors.maxSpeed) {
+          // Add safety checks (default to 100 if not in config)
+          if (command.data.speed > (config.motors?.maxSpeed || 100)) {
             command.data.speed = config.motors.maxSpeed;
           }
           
@@ -1010,8 +1048,8 @@ class MobileAppInterface {
       if (data.clientId !== clientInfo.id) {
         this._sendError(ws, 'INVALID_CLIENT_ID', 'Invalid client ID');
         
-        // Log security event
-        if (config.security.logging.logFailedAuthAttempts) {
+        // Log security event (default to true if not in config)
+        if (config.security?.logging?.logFailedAuthAttempts !== false) {
           this.logger.warn(`Authentication attempt with mismatched client ID: ${data.clientId} vs ${clientInfo.id}`);
         }
         
@@ -1102,8 +1140,8 @@ class MobileAppInterface {
       if (!clientCert) {
         this._sendError(ws, 'CERTIFICATE_NOT_FOUND', 'Client certificate not found');
         
-        // Log security event
-        if (config.security.logging.logCommandVerificationFailures) {
+        // Log security event (default to true if not in config)
+        if (config.security?.logging?.logCommandVerificationFailures !== false) {
           this.logger.warn(`Command verification failed - certificate not found: ${clientInfo.id}`);
         }
         
@@ -1116,8 +1154,8 @@ class MobileAppInterface {
       if (!verificationResult.valid) {
         this._sendError(ws, 'COMMAND_VERIFICATION_FAILED', verificationResult.error);
         
-        // Log security event
-        if (config.security.logging.logCommandVerificationFailures) {
+        // Log security event (default to true if not in config)
+        if (config.security?.logging?.logCommandVerificationFailures !== false) {
           this.logger.warn(`Command verification failed: ${verificationResult.error} for client ${clientInfo.id}`);
         }
         
@@ -1166,9 +1204,10 @@ class MobileAppInterface {
         };
       }
       
-      // Add safety checks
-      if (data.speed > config.motors.maxSpeed) {
-        data.speed = config.motors.maxSpeed;
+      // Add safety checks (default to 100 if not in config)
+      const maxSpeed = config.motors?.maxSpeed || 100;
+      if (data.speed > maxSpeed) {
+        data.speed = maxSpeed;
       }
       
       // Add command metadata
@@ -1517,42 +1556,65 @@ class MobileAppInterface {
     
     // Close WebSocket server
     if (this.wss) {
-      await new Promise((resolve, reject) => {
-        this.wss.close(err => {
-          if (err) {
-            this.logger.error(`Failed to close WebSocket server: ${err.message}`);
-            reject(err);
-          } else {
-            this.logger.info('WebSocket server closed');
-            resolve();
-          }
+      try {
+        await new Promise((resolve) => {
+          this.wss.close(err => {
+            if (err) {
+              this.logger.error(`Failed to close WebSocket server: ${err.message}`);
+              // Don't reject, just log the error and resolve anyway
+              resolve();
+            } else {
+              this.logger.info('WebSocket server closed');
+              resolve();
+            }
+          });
         });
-      });
+      } catch (error) {
+        this.logger.error(`Error during WebSocket server shutdown: ${error.message}`);
+        // Continue with shutdown process despite errors
+      }
     }
     
     // Close Socket.IO server
     if (this.io) {
-      await new Promise((resolve) => {
-        this.io.close(() => {
-          this.logger.info('Socket.IO server closed');
-          resolve();
+      try {
+        await new Promise((resolve) => {
+          this.io.close(() => {
+            this.logger.info('Socket.IO server closed');
+            resolve();
+          });
         });
-      });
+      } catch (error) {
+        this.logger.error(`Error during Socket.IO server shutdown: ${error.message}`);
+        // Continue with shutdown process despite errors
+      }
     }
     
     // Close HTTPS server
     if (this.httpsServer) {
-      await new Promise((resolve, reject) => {
-        this.httpsServer.close(err => {
-          if (err) {
-            this.logger.error(`Failed to close HTTPS server: ${err.message}`);
-            reject(err);
+      try {
+        await new Promise((resolve, reject) => {
+          // Check if server is actually running
+          if (this.httpsServer.listening) {
+            this.httpsServer.close(err => {
+              if (err) {
+                this.logger.error(`Failed to close HTTPS server: ${err.message}`);
+                // Don't reject, just log the error and resolve anyway
+                resolve();
+              } else {
+                this.logger.info('HTTPS server closed');
+                resolve();
+              }
+            });
           } else {
-            this.logger.info('HTTPS server closed');
+            this.logger.info('HTTPS server was not running');
             resolve();
           }
         });
-      });
+      } catch (error) {
+        this.logger.error(`Error during HTTPS server shutdown: ${error.message}`);
+        // Continue with shutdown process despite errors
+      }
     }
     
     this.isConnected = false;

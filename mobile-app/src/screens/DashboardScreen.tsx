@@ -151,130 +151,136 @@ const DashboardScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {/* Connection Status */}
-        <View style={styles.connectionContainer}>
-          <ConnectionStatusBadge 
-            isConnected={isConnected} 
-            connectionType={connectionType} 
-            connectionQuality={connectionQuality} 
-          />
-          
-          <TouchableOpacity
-            style={styles.connectionButton}
-            onPress={isConnected ? handleDisconnect : handleConnect}
-          >
-            <Text style={styles.connectionButtonText}>
-              {isConnected ? i18n.t('disconnect') : i18n.t('connect')}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Map Preview */}
-        <MapPreview 
-          position={status.position}
-          style={styles.mapPreview}
-        />
-
-        {/* Status Cards */}
-        <View style={styles.cardsContainer}>
-          {/* Battery Status */}
-          <StatusCard
-            title={i18n.t('battery.level')}
-            icon="battery-charging"
-            iconColor={getBatteryStatusColor(status.batteryLevel)}
-          >
-            <BatteryIndicator 
-              level={status.batteryLevel} 
-              style={styles.batteryIndicator} 
+      <View style={styles.mainContainer}>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={styles.contentContainer}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {/* Connection Status */}
+          <View style={styles.connectionContainer}>
+            <ConnectionStatusBadge 
+              isConnected={isConnected} 
+              connectionType={connectionType} 
+              connectionQuality={connectionQuality} 
             />
-            <Text style={styles.batteryText}>
-              {status.batteryLevel}% • {formatBatteryTimeRemaining(status.batteryTimeRemaining)}
-            </Text>
-          </StatusCard>
-
-          {/* Operation Status */}
-          <StatusCard
-            title={i18n.t('operationStatusTitle')}
-            icon="analytics"
-            iconColor="#4CAF50"
-          >
-            <View style={styles.operationStatusContainer}>
-              <Text style={styles.operationStatusText}>
-                {i18n.t(`operationStatus.${status.operationStatus}`)}
+            
+            <TouchableOpacity
+              style={styles.connectionButton}
+              onPress={isConnected ? handleDisconnect : handleConnect}
+            >
+              <Text style={styles.connectionButtonText}>
+                {isConnected ? i18n.t('disconnect') : i18n.t('connect')}
               </Text>
-              
-              {status.currentOperation && (
-                <View style={styles.currentOperationContainer}>
-                  <Text style={styles.currentOperationText}>
-                    {status.currentOperation.type}
-                  </Text>
-                  <View style={styles.progressBarContainer}>
-                    <View 
-                      style={[
-                        styles.progressBar, 
-                        { width: `${status.currentOperation.progress}%` }
-                      ]} 
-                    />
+            </TouchableOpacity>
+          </View>
+
+          {/* Map Preview */}
+          <MapPreview 
+            position={status.position}
+            style={styles.mapPreview}
+          />
+
+          {/* Status Cards */}
+          <View style={styles.cardsContainer}>
+            {/* Battery Status */}
+            <StatusCard
+              title={i18n.t('battery.level')}
+              icon="battery-charging"
+              iconColor={getBatteryStatusColor(status.batteryLevel)}
+            >
+              <BatteryIndicator 
+                level={status.batteryLevel} 
+                style={styles.batteryIndicator} 
+              />
+              <Text style={styles.batteryText}>
+                {status.batteryLevel}% • {formatBatteryTimeRemaining(status.batteryTimeRemaining)}
+              </Text>
+            </StatusCard>
+
+            {/* Operation Status */}
+            <StatusCard
+              title={i18n.t('operationStatusTitle')}
+              icon="analytics"
+              iconColor="#4CAF50"
+            >
+              <View style={styles.operationStatusContainer}>
+                <Text style={styles.operationStatusText}>
+                  {i18n.t(`operationStatus.${status.operationStatus}`)}
+                </Text>
+                
+                {status.currentOperation && (
+                  <View style={styles.currentOperationContainer}>
+                    <Text style={styles.currentOperationText}>
+                      {status.currentOperation.type}
+                    </Text>
+                    <View style={styles.progressBarContainer}>
+                      <View 
+                        style={[
+                          styles.progressBar, 
+                          { width: `${status.currentOperation.progress}%` }
+                        ]} 
+                      />
+                    </View>
+                    <Text style={styles.progressText}>
+                      {status.currentOperation.progress}% • 
+                      {formatBatteryTimeRemaining(status.currentOperation.estimatedTimeRemaining)}
+                    </Text>
                   </View>
-                  <Text style={styles.progressText}>
-                    {status.currentOperation.progress}% • 
-                    {formatBatteryTimeRemaining(status.currentOperation.estimatedTimeRemaining)}
-                  </Text>
-                </View>
-              )}
-            </View>
-          </StatusCard>
+                )}
+              </View>
+            </StatusCard>
 
-          {/* Speed */}
-          <StatusCard
-            title={i18n.t('speed')}
-            icon="speedometer"
-            iconColor="#2196F3"
-          >
-            <Text style={styles.metricValue}>
-              {formatSpeed(status.speed)}
-            </Text>
-          </StatusCard>
+            {/* Speed */}
+            <StatusCard
+              title={i18n.t('speed')}
+              icon="speedometer"
+              iconColor="#2196F3"
+            >
+              <Text style={styles.metricValue}>
+                {formatSpeed(status.speed)}
+              </Text>
+            </StatusCard>
 
-          {/* Motor Temperature */}
-          <StatusCard
-            title={i18n.t('motorTemperature')}
-            icon="thermometer"
-            iconColor="#FF9800"
-          >
-            <Text style={styles.metricValue}>
-              {formatTemperature(status.motorTemperature)}
-            </Text>
-          </StatusCard>
+            {/* Motor Temperature */}
+            <StatusCard
+              title={i18n.t('motorTemperature')}
+              icon="thermometer"
+              iconColor="#FF9800"
+            >
+              <Text style={styles.metricValue}>
+                {formatTemperature(status.motorTemperature)}
+              </Text>
+            </StatusCard>
 
-          {/* Safety Status */}
-          <StatusCard
-            title={i18n.t('safetyStatusTitle')}
-            icon="shield-checkmark"
-            iconColor={getSafetyStatusColor(status.safetyStatus)}
-          >
-            <Text style={[
-              styles.safetyStatusText,
-              { color: getSafetyStatusColor(status.safetyStatus) }
-            ]}>
-              {i18n.t(`safetyStatus.${status.safetyStatus}`)}
-            </Text>
-          </StatusCard>
-        </View>
+            {/* Safety Status */}
+            <StatusCard
+              title={i18n.t('safetyStatusTitle')}
+              icon="shield-checkmark"
+              iconColor={getSafetyStatusColor(status.safetyStatus)}
+            >
+              <Text style={[
+                styles.safetyStatusText,
+                { color: getSafetyStatusColor(status.safetyStatus) }
+              ]}>
+                {i18n.t(`safetyStatus.${status.safetyStatus}`)}
+              </Text>
+            </StatusCard>
+          </View>
 
-        {/* Alerts */}
-        <View style={styles.alertsContainer}>
-          <Text style={styles.sectionTitle}>{i18n.t('recentAlerts')}</Text>
+          {/* Alerts Section Title */}
+          <View style={styles.alertsContainer}>
+            <Text style={styles.sectionTitle}>{i18n.t('recentAlerts')}</Text>
+          </View>
+        </ScrollView>
+        
+        {/* AlertsList is rendered outside the ScrollView to avoid nesting VirtualizedLists */}
+        <View style={styles.alertsListContainer}>
           <AlertsList alerts={status.alerts} />
         </View>
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -284,11 +290,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  mainContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
   contentContainer: {
     padding: 16,
+    paddingBottom: 0, // Remove bottom padding since we'll have the AlertsList below
   },
   connectionContainer: {
     flexDirection: 'row',
@@ -365,7 +375,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   alertsContainer: {
-    marginBottom: 16,
+    marginBottom: 8,
+  },
+  alertsListContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
   },
   sectionTitle: {
     fontSize: 18,

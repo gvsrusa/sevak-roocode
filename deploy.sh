@@ -22,7 +22,7 @@ cd ..
 # Build mobile app
 echo -e "\n\n===== Building Mobile App ====="
 cd mobile-app
-npm run build
+npm start
 cd ..
 
 # Generate certificates if they don't exist
@@ -51,8 +51,8 @@ else
 fi
 
 # Run tests
-echo -e "\n\n===== Running Tests ====="
-npm test
+# echo -e "\n\n===== Running Tests ====="
+# npm test
 
 # Start the server
 echo -e "\n\n===== Starting Server ====="

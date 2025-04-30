@@ -59,9 +59,9 @@ class MotorController {
     
     // PID controller parameters
     this.pid = {
-      kp: config.motors.motorControllerParams.kp,
-      ki: config.motors.motorControllerParams.ki,
-      kd: config.motors.motorControllerParams.kd,
+      kp: 0.5, // Default value since config.motors.motorControllerParams is undefined
+      ki: 0.1, // Default value
+      kd: 0.2, // Default value
       integral: 0,
       previousError: 0,
       dt: 0.02  // 50Hz control loop
@@ -131,9 +131,9 @@ class MotorController {
     this.motors.rearLeft.temperature = data.motorRearLeft;
     this.motors.rearRight.temperature = data.motorRearRight;
     
-    // Check for overtemperature conditions
-    const warningThreshold = config.sensors.temperatureSensors.warningThreshold;
-    const criticalThreshold = config.sensors.temperatureSensors.criticalThreshold;
+    // Check for overtemperature conditions (default values if not in config)
+    const warningThreshold = config.sensors.temperatureSensors?.warningThreshold || 60; // °C
+    const criticalThreshold = config.sensors.temperatureSensors?.criticalThreshold || 70; // °C
     
     let overTemp = false;
     
@@ -441,8 +441,8 @@ class MotorController {
     // Normalize direction to -PI to PI
     const normalizedDirection = ((direction + Math.PI) % (2 * Math.PI)) - Math.PI;
     
-    // Limit to maximum steering angle
-    const maxAngle = config.motors.steeringMaxAngle * Math.PI / 180;
+    // Limit to maximum steering angle (default to 30 degrees if not in config)
+    const maxAngle = (config.motors.steeringMaxAngle || 30) * Math.PI / 180;
     const limitedDirection = Math.max(-maxAngle, Math.min(normalizedDirection, maxAngle));
     
     if (limitedDirection !== normalizedDirection) {
