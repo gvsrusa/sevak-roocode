@@ -210,7 +210,7 @@ Test-Driven Development is a software development approach where tests are writt
 - Provides immediate feedback
 - Serves as documentation
 - Encourages modular design</content>
-    <!-- <line_count>15</line_count> -->
+    <line_count>15</line_count>
   </write_to_file>
   ```
 

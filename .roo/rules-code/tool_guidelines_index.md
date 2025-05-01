@@ -18,5 +18,5 @@ To prevent common errors when using tools, refer to these detailed guidelines:
 2. Verify file existence before attempting modifications
 3. For apply_diff, never include literal diff markers in code examples
 4. For search_and_replace, always include both search and replace parameters
-<!-- 5. For write_to_file, always include the line_count parameter -->
+5. For write_to_file, always include the line_count parameter
 6. For insert_content, always include valid start_line and content in operations array

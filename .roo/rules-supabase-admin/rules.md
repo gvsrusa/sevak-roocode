@@ -129,7 +129,7 @@ Always validate each tool run to prevent errors and ensure accuracy.
 <write_to_file>
   <path>File path here</path>
   <content>Your file content here</content>
-  <!-- <line_count>Total number of lines</line_count> -->
+  <line_count>Total number of lines</line_count>
 </write_to_file>
 
 <list_files>

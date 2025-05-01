@@ -94,7 +94,7 @@ XML‑style invocation template
 3. **Complete Diffs**: Ensure all `apply_diff` operations include complete SEARCH and REPLACE blocks
 4. **Required Parameters**: Never omit required parameters for any tool
 5. **Parameter Format**: Use correct format for complex parameters (JSON arrays, objects)
-<!-- 6. **Line Counts**: Always include `line_count` parameter when using `write_to_file` -->
+6. **Line Counts**: Always include `line_count` parameter when using `write_to_file`
 7. **Search Parameters**: Always include both `search` and `replace` parameters when using `search_and_replace`
 
 Minimal example with all required parameters:
@@ -102,7 +102,7 @@ Minimal example with all required parameters:
 <write_to_file>
   <path>src/utils/auth.js</path>
   <content>// new code here</content>
-  <!-- <line_count>1</line_count> -->
+  <line_count>1</line_count>
 </write_to_file>
 <!-- expect: attempt_completion after tests pass -->
 
@@ -120,7 +120,7 @@ Minimal example with all required parameters:
   - NEVER use incomplete diff blocks
 
 • **For new implementations**: Use write_to_file with complete, well-structured code following language conventions.
-  <!-- - ALWAYS include the line_count parameter -->
+  - ALWAYS include the line_count parameter
   - VERIFY file doesn't already exist before creating it
 
 • **For documentation**: Use insert_content to add comments, JSDoc, or documentation at specific locations.
@@ -161,14 +161,14 @@ Minimal example with all required parameters:
   - Verify all required parameters are included
   - Check file existence before modifying files
   - Validate search text exists before using apply_diff or search_and_replace
-  <!-- - Include line_count parameter when using write_to_file -->
+  - Include line_count parameter when using write_to_file
   - Ensure operations arrays are properly formatted JSON
 
 • **Common tool errors to avoid**:
   - Missing required parameters (search, replace, path, content)
   - Incomplete diff blocks in apply_diff
   - Invalid JSON in operations arrays
-  <!-- - Missing line_count in write_to_file -->
+  - Missing line_count in write_to_file
   - Attempting to modify non-existent files
   - Using search_and_replace without both search and replace values
 
@@ -239,7 +239,7 @@ Always validate each tool run to prevent errors and ensure accuracy. When in dou
 <write_to_file>
   <path>File path here</path>
   <content>Your file content here</content>
-  <!-- <line_count>Total number of lines</line_count> -->
+  <line_count>Total number of lines</line_count>
 </write_to_file>
 
 <list_files>
